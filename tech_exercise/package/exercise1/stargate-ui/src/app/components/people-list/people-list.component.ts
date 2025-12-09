@@ -16,7 +16,6 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 
 import { AstronautService } from '../../services/astronaut.service';
 import { PersonAstronaut } from '../../models/astronaut.models';
-import { AddPersonDialogComponent } from './add-person-dialog.component';
 
 @Component({
   selector: 'app-people-list',
@@ -107,16 +106,8 @@ export class PeopleListComponent implements OnInit {
   }
 
   addPerson(): void {
-    const dialogRef = this.dialog.open(AddPersonDialogComponent, {
-      panelClass: 'space-dialog'
-    });
-
-    dialogRef.afterClosed().subscribe((name) => {
-      if (name) {
-        this.snackBar.open(`Astronaut "${name}" added!`, 'Close', { duration: 3000 });
-        this.loadPeople();
-      }
-    });
+    // TODO: Implement add person dialog
+    console.log('Add person dialog not implemented');
   }
 
   formatDate(dateStr: string | null): string {

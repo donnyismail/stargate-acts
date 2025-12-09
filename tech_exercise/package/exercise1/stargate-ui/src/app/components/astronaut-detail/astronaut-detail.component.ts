@@ -10,12 +10,10 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { AstronautService } from '../../services/astronaut.service';
 import { PersonAstronaut, AstronautDuty } from '../../models/astronaut.models';
-import { AddDutyDialogComponent } from './add-duty-dialog.component';
-import { RetireDialogComponent } from './retire-dialog.component';
-import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-astronaut-detail',
@@ -86,34 +84,13 @@ export class AstronautDetailComponent implements OnInit {
   }
 
   openAddDutyDialog(): void {
-    const dialogRef = this.dialog.open(AddDutyDialogComponent, {
-      data: { name: this.name },
-      panelClass: 'space-dialog'
-    });
-
-    dialogRef.afterClosed().subscribe((success) => {
-      if (success) {
-        this.snackBar.open('Duty added successfully!', 'Close', { duration: 3000 });
-        this.loadAstronautData();
-      }
-    });
+    // TODO: Implement add duty dialog
+    console.log('Add duty dialog not implemented');
   }
 
   openRetireDialog(): void {
-    const dialogRef = this.dialog.open(RetireDialogComponent, {
-      data: {
-        name: this.name,
-        currentRank: this.person()?.currentRank || 'Retired'
-      },
-      panelClass: 'space-dialog'
-    });
-
-    dialogRef.afterClosed().subscribe((success) => {
-      if (success) {
-        this.snackBar.open('Astronaut retired successfully!', 'Close', { duration: 3000 });
-        this.loadAstronautData();
-      }
-    });
+    // TODO: Implement retire dialog
+    console.log('Retire dialog not implemented');
   }
 
   formatDate(dateStr: string | null): string {
