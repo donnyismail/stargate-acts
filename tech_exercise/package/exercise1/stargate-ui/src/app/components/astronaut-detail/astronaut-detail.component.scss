@@ -343,10 +343,26 @@
   }
 }
 
-// FAB
-.add-fab {
+// FAB Container
+.fab-container {
   position: fixed;
   bottom: 40px;
   right: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.add-fab {
   transform: scale(1.2);
+  background: linear-gradient(135deg, #00f0ff, #b366ff) !important;
+}
+
+.retire-fab {
+  transform: scale(1.1);
+  background: linear-gradient(135deg, #ff9800, #ff5722) !important;
+
+  &:hover {
+    box-shadow: 0 0 20px rgba(255, 152, 0, 0.5);
+  }
 }

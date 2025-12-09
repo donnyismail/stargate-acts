@@ -14,6 +14,8 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { AstronautService } from '../../services/astronaut.service';
 import { PersonAstronaut, AstronautDuty } from '../../models/astronaut.models';
 import { AddDutyDialogComponent } from './add-duty-dialog.component';
+import { RetireDialogComponent } from './retire-dialog.component';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-astronaut-detail',
@@ -26,7 +28,8 @@ import { AddDutyDialogComponent } from './add-duty-dialog.component';
     MatChipsModule,
     MatProgressSpinnerModule,
     MatSnackBarModule,
-    MatDialogModule
+    MatDialogModule,
+    MatTooltipModule
   ],
   templateUrl: './astronaut-detail.component.html',
   styleUrl: './astronaut-detail.component.scss',
@@ -91,6 +94,23 @@ export class AstronautDetailComponent implements OnInit {
     dialogRef.afterClosed().subscribe((success) => {
       if (success) {
         this.snackBar.open('Duty added successfully!', 'Close', { duration: 3000 });
+        this.loadAstronautData();
+      }
+    });
+  }
+
+  openRetireDialog(): void {
+    const dialogRef = this.dialog.open(RetireDialogComponent, {
+      data: {
+        name: this.name,
+        currentRank: this.person()?.currentRank || 'Retired'
+      },
+      panelClass: 'space-dialog'
+    });
+
+    dialogRef.afterClosed().subscribe((success) => {
+      if (success) {
+        this.snackBar.open('Astronaut retired successfully!', 'Close', { duration: 3000 });
         this.loadAstronautData();
       }
     });

@@ -120,10 +120,15 @@
     </div>
   }
 
-  <!-- FAB to add duty -->
+  <!-- Action buttons for active astronauts -->
   @if (!loading() && person() && !isRetired()) {
-    <button mat-fab class="add-fab" (click)="openAddDutyDialog()">
-      <mat-icon>add_task</mat-icon>
-    </button>
+    <div class="fab-container">
+      <button mat-fab class="retire-fab" (click)="openRetireDialog()" matTooltip="Retire Astronaut">
+        <mat-icon>logout</mat-icon>
+      </button>
+      <button mat-fab class="add-fab" (click)="openAddDutyDialog()" matTooltip="Add New Duty">
+        <mat-icon>add_task</mat-icon>
+      </button>
+    </div>
   }
 </div>
