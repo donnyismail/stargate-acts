@@ -1,14 +1,27 @@
 import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractControl, ValidationErrors } from '@angular/forms';
 import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 
 import { AstronautService } from '../../services/astronaut.service';
+import { forkJoin } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
+
+// Custom validator to prevent RETIRED as duty title
+function notRetiredValidator(control: AbstractControl): ValidationErrors | null {
+  const value = control.value?.trim()?.toUpperCase();
+  if (value === 'RETIRED') {
+    return { retired: true };
+  }
+  return null;
+}
 
 @Component({
   selector: 'app-add-person-dialog',
@@ -21,7 +34,9 @@ import { AstronautService } from '../../services/astronaut.service';
     MatInputModule,
     MatButtonModule,
     MatIconModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    MatDatepickerModule,
+    MatNativeDateModule
   ],
   template: `
     <h2 mat-dialog-title>
@@ -31,11 +46,47 @@ import { AstronautService } from '../../services/astronaut.service';
 
     <mat-dialog-content>
       <form [formGroup]="form" class="person-form">
+        <div class="section-label">Personal Information</div>
+
         <mat-form-field appearance="outline">
           <mat-label>Full Name</mat-label>
           <input matInput formControlName="name" placeholder="e.g. John Smith">
           @if (form.get('name')?.hasError('required') && form.get('name')?.touched) {
             <mat-error>Name is required</mat-error>
+          }
+          @if (form.get('name')?.hasError('minlength') && form.get('name')?.touched) {
+            <mat-error>Name must be at least 2 characters</mat-error>
+          }
+        </mat-form-field>
+
+        <div class="section-label">Initial Assignment</div>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Rank</mat-label>
+          <input matInput formControlName="rank" placeholder="e.g. Captain">
+          @if (form.get('rank')?.hasError('required') && form.get('rank')?.touched) {
+            <mat-error>Rank is required</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Duty Title</mat-label>
+          <input matInput formControlName="dutyTitle" placeholder="e.g. Mission Specialist">
+          @if (form.get('dutyTitle')?.hasError('required') && form.get('dutyTitle')?.touched) {
+            <mat-error>Duty title is required</mat-error>
+          }
+          @if (form.get('dutyTitle')?.hasError('retired')) {
+            <mat-error>Cannot assign RETIRED as initial duty</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Start Date</mat-label>
+          <input matInput [matDatepicker]="picker" formControlName="dutyStartDate">
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+          @if (form.get('dutyStartDate')?.hasError('required') && form.get('dutyStartDate')?.touched) {
+            <mat-error>Start date is required</mat-error>
           }
         </mat-form-field>
 
@@ -84,7 +135,18 @@ import { AstronautService } from '../../services/astronaut.service';
       display: flex;
       flex-direction: column;
       gap: 16px;
-      min-width: 350px;
+      min-width: 400px;
+    }
+
+    .section-label {
+      color: #00f0ff;
+      font-size: 12px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-top: 8px;
+      padding-bottom: 4px;
+      border-bottom: 1px solid rgba(0, 240, 255, 0.2);
     }
 
     .error-message {
@@ -132,7 +194,10 @@ export class AddPersonDialogComponent {
     private astronautService: AstronautService
   ) {
     this.form = this.fb.group({
-      name: ['', [Validators.required, Validators.minLength(2)]]
+      name: ['', [Validators.required, Validators.minLength(2)]],
+      rank: ['', Validators.required],
+      dutyTitle: ['', [Validators.required, notRetiredValidator]],
+      dutyStartDate: [null, Validators.required]
     });
   }
 
@@ -145,22 +210,36 @@ export class AddPersonDialogComponent {
 
     this.saving.set(true);
     this.errorMessage.set('');
-    const name = this.form.value.name.trim();
+    const formValue = this.form.value;
+    const name = formValue.name.trim();
 
-    this.astronautService.createPerson(name).subscribe({
+    // First create the person, then create their first duty
+    this.astronautService.createPerson(name).pipe(
+      switchMap(() => {
+        return this.astronautService.createAstronautDuty({
+          name: name,
+          rank: formValue.rank.trim(),
+          dutyTitle: formValue.dutyTitle.trim(),
+          dutyStartDate: new Date(formValue.dutyStartDate).toISOString()
+        });
+      })
+    ).subscribe({
       next: (response) => {
         this.saving.set(false);
         if (response.success) {
           this.dialogRef.close(name);
         } else {
-          this.errorMessage.set(response.message || 'Failed to create astronaut');
+          this.errorMessage.set(response.message || 'Failed to create astronaut duty');
         }
       },
       error: (err) => {
         this.saving.set(false);
-        // API returns 400 for duplicate names
         if (err.status === 400) {
-          this.errorMessage.set('An astronaut with this name already exists');
+          if (err.error?.message?.includes('name') || !err.error?.message) {
+            this.errorMessage.set('An astronaut with this name already exists');
+          } else {
+            this.errorMessage.set(err.error?.message || 'Invalid data. Please check your inputs.');
+          }
         } else {
           this.errorMessage.set('Failed to create astronaut. Please try again.');
         }

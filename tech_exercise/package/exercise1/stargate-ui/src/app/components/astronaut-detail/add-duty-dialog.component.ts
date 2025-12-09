@@ -1,7 +1,16 @@
 import { Component, Inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractControl, ValidationErrors } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
+
+// Custom validator to prevent RETIRED as duty title
+function notRetiredValidator(control: AbstractControl): ValidationErrors | null {
+  const value = control.value?.trim()?.toUpperCase();
+  if (value === 'RETIRED') {
+    return { retired: true };
+  }
+  return null;
+}
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
@@ -48,6 +57,9 @@ import { AstronautService } from '../../services/astronaut.service';
           <input matInput formControlName="dutyTitle" placeholder="e.g. Mission Commander">
           @if (form.get('dutyTitle')?.hasError('required') && form.get('dutyTitle')?.touched) {
             <mat-error>Duty title is required</mat-error>
+          }
+          @if (form.get('dutyTitle')?.hasError('retired')) {
+            <mat-error>Use the Retire action instead of entering RETIRED</mat-error>
           }
         </mat-form-field>
 
@@ -156,7 +168,7 @@ export class AddDutyDialogComponent {
   ) {
     this.form = this.fb.group({
       rank: ['', Validators.required],
-      dutyTitle: ['', Validators.required],
+      dutyTitle: ['', [Validators.required, notRetiredValidator]],
       dutyStartDate: [null, Validators.required]
     });
   }
