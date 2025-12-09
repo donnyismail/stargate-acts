@@ -11,7 +11,7 @@ dotnet run
 - **API:** http://localhost:5204
 - **Swagger:** http://localhost:5204/swagger
 
-### Frontend (Angular 18)
+### Frontend (Angular 21)
 ```bash
 cd stargate-ui
 npm install
@@ -33,7 +33,7 @@ ng serve
 | Implement database logging | ✅ `ProcessLog` table |
 | Improve defensive coding | ✅ Null checks, error handling |
 
-### Frontend (Angular 18)
+### Frontend (Angular 21)
 
 | Feature | Implementation |
 |---------|----------------|
@@ -47,7 +47,7 @@ ng serve
 | Error handling | Snackbar notifications |
 
 **Tech Stack:**
-- Angular 18 with standalone components
+- Angular 21 with standalone components
 - Angular Material UI
 - Signals for reactive state management
 - OnPush change detection
@@ -153,7 +153,7 @@ exercise1/
 │
 ├── StargateAPI.Tests/            # Unit tests (xUnit)
 │
-└── stargate-ui/                  # Angular 18 frontend
+└── stargate-ui/                  # Angular 21 frontend
     └── src/app/
         ├── components/
         │   ├── people-list/      # Roster table
