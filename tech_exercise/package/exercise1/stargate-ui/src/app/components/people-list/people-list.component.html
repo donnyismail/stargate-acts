@@ -1,0 +1,123 @@
+<div class="people-list-container">
+  <!-- Header with logo -->
+  <div class="header">
+    <div class="logo-section">
+      <div class="logo-icon">
+        <mat-icon>rocket_launch</mat-icon>
+      </div>
+      <div class="title-section">
+        <h1>STARGATE</h1>
+        <span class="subtitle">Astronaut Career Tracking System</span>
+      </div>
+    </div>
+    <div class="status-indicator">
+      <span class="pulse"></span>
+      <span>SYSTEM ONLINE</span>
+    </div>
+  </div>
+
+  <!-- Stats bar -->
+  <div class="stats-bar">
+    <div class="stat-item">
+      <span class="stat-value">{{ people().length }}</span>
+      <span class="stat-label">TOTAL PERSONNEL</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-value">{{ activeCount() }}</span>
+      <span class="stat-label">ACTIVE DUTY</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-value">{{ retiredCount() }}</span>
+      <span class="stat-label">RETIRED</span>
+    </div>
+  </div>
+
+  <!-- Search -->
+  <mat-form-field appearance="outline" class="search-field">
+    <mat-label>Search personnel database</mat-label>
+    <input matInput [value]="searchText()" (input)="onSearchChange($any($event.target).value)" placeholder="Name, rank, or assignment...">
+    <mat-icon matSuffix>search</mat-icon>
+  </mat-form-field>
+
+  <!-- Loading spinner -->
+  @if (loading()) {
+    <div class="spinner-container">
+      <mat-spinner diameter="60"></mat-spinner>
+      <p class="loading-text">ACCESSING DATABASE...</p>
+    </div>
+  }
+
+  <!-- Data table -->
+  @if (!loading()) {
+    <div class="table-container">
+      <table mat-table [dataSource]="filteredPeople()" class="astronaut-table">
+        <!-- Name Column -->
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef>PERSONNEL</th>
+          <td mat-cell *matCellDef="let person">
+            <div class="person-cell">
+              <mat-icon class="person-icon">person</mat-icon>
+              <span>{{ person.name }}</span>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Rank Column -->
+        <ng-container matColumnDef="currentRank">
+          <th mat-header-cell *matHeaderCellDef>RANK</th>
+          <td mat-cell *matCellDef="let person">{{ person.currentRank || '—' }}</td>
+        </ng-container>
+
+        <!-- Duty Title Column -->
+        <ng-container matColumnDef="currentDutyTitle">
+          <th mat-header-cell *matHeaderCellDef>ASSIGNMENT</th>
+          <td mat-cell *matCellDef="let person">{{ person.currentDutyTitle || '—' }}</td>
+        </ng-container>
+
+        <!-- Career Start Date Column -->
+        <ng-container matColumnDef="careerStartDate">
+          <th mat-header-cell *matHeaderCellDef>SERVICE DATE</th>
+          <td mat-cell *matCellDef="let person">{{ formatDate(person.careerStartDate) }}</td>
+        </ng-container>
+
+        <!-- Status Column -->
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>STATUS</th>
+          <td mat-cell *matCellDef="let person">
+            @if (isRetired(person)) {
+              <span class="status-badge status-retired">
+                <span class="status-dot"></span>
+                RETIRED
+              </span>
+            } @else if (person.currentDutyTitle) {
+              <span class="status-badge status-active">
+                <span class="status-dot"></span>
+                ACTIVE
+              </span>
+            } @else {
+              <span class="status-badge status-new">
+                <span class="status-dot"></span>
+                NEW
+              </span>
+            }
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="onRowClick(row)" class="clickable-row"></tr>
+      </table>
+    </div>
+
+    @if (filteredPeople().length === 0) {
+      <div class="no-data">
+        <mat-icon>search_off</mat-icon>
+        <p>NO PERSONNEL RECORDS FOUND</p>
+      </div>
+    }
+  }
+
+  <!-- FAB to add person -->
+  <button mat-fab class="add-fab" (click)="addPerson()">
+    <mat-icon>person_add</mat-icon>
+  </button>
+</div>

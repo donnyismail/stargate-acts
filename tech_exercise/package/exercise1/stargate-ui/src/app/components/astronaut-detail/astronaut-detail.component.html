@@ -1,0 +1,129 @@
+<div class="detail-container">
+  <!-- Back button -->
+  <button mat-button (click)="goBack()" class="back-button">
+    <mat-icon>arrow_back</mat-icon>
+    <span>RETURN TO ROSTER</span>
+  </button>
+
+  <!-- Loading spinner -->
+  @if (loading()) {
+    <div class="spinner-container">
+      <mat-spinner diameter="60"></mat-spinner>
+      <p class="loading-text">LOADING PERSONNEL FILE...</p>
+    </div>
+  }
+
+  @if (!loading() && person()) {
+    <!-- Header card with person info -->
+    <div class="profile-card">
+      <div class="profile-header">
+        <div class="avatar">
+          <mat-icon>person</mat-icon>
+        </div>
+        <div class="profile-info">
+          <h1 class="person-name">{{ person()!.name }}</h1>
+          <span class="person-rank">{{ person()!.currentRank || 'Unranked' }}</span>
+          @if (isRetired()) {
+            <span class="status-badge status-retired">
+              <span class="status-dot"></span>
+              RETIRED
+            </span>
+          } @else if (person()!.currentDutyTitle) {
+            <span class="status-badge status-active">
+              <span class="status-dot"></span>
+              ACTIVE DUTY
+            </span>
+          }
+        </div>
+      </div>
+
+      <div class="profile-stats">
+        <div class="stat-box">
+          <mat-icon>work</mat-icon>
+          <div class="stat-content">
+            <span class="stat-label">CURRENT ASSIGNMENT</span>
+            <span class="stat-value">{{ person()!.currentDutyTitle || 'Awaiting Assignment' }}</span>
+          </div>
+        </div>
+        <div class="stat-box">
+          <mat-icon>event</mat-icon>
+          <div class="stat-content">
+            <span class="stat-label">SERVICE START</span>
+            <span class="stat-value">{{ formatDate(person()!.careerStartDate) }}</span>
+          </div>
+        </div>
+        @if (person()!.careerEndDate) {
+          <div class="stat-box">
+            <mat-icon>event_busy</mat-icon>
+            <div class="stat-content">
+              <span class="stat-label">SERVICE END</span>
+              <span class="stat-value">{{ formatDate(person()!.careerEndDate) }}</span>
+            </div>
+          </div>
+        }
+        <div class="stat-box">
+          <mat-icon>assignment</mat-icon>
+          <div class="stat-content">
+            <span class="stat-label">TOTAL ASSIGNMENTS</span>
+            <span class="stat-value">{{ duties().length }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Duty History Timeline -->
+    <div class="section-header">
+      <mat-icon>history</mat-icon>
+      <h2>SERVICE RECORD</h2>
+    </div>
+
+    @if (duties().length === 0) {
+      <div class="no-data">
+        <mat-icon>folder_open</mat-icon>
+        <p>NO SERVICE RECORDS FOUND</p>
+      </div>
+    }
+
+    <div class="timeline">
+      @for (duty of duties(); track duty.id; let i = $index) {
+        <div class="timeline-item" [class.current]="!duty.dutyEndDate">
+          <div class="timeline-marker">
+            <div class="marker-dot"></div>
+            @if (i < duties().length - 1) {
+              <div class="marker-line"></div>
+            }
+          </div>
+          <div class="timeline-content">
+            <div class="duty-card">
+              <div class="duty-header">
+                <span class="duty-title">{{ duty.dutyTitle }}</span>
+                @if (!duty.dutyEndDate) {
+                  <span class="current-badge">CURRENT</span>
+                }
+              </div>
+              <span class="duty-rank">{{ duty.rank }}</span>
+              <div class="duty-dates">
+                <mat-icon>schedule</mat-icon>
+                <span>{{ formatDate(duty.dutyStartDate) }} — {{ duty.dutyEndDate ? formatDate(duty.dutyEndDate) : 'Present' }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  @if (!loading() && !person()) {
+    <div class="no-data">
+      <mat-icon>error_outline</mat-icon>
+      <p>PERSONNEL FILE NOT FOUND</p>
+    </div>
+  }
+
+  <!-- FAB to add duty -->
+  @if (!loading() && person() && !isRetired()) {
+    <button mat-fab class="add-fab" (click)="openAddDutyDialog()">
+      <mat-icon>add_task</mat-icon>
+    </button>
+  }
+</div>

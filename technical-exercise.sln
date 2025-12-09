@@ -1,0 +1,42 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.2.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tech_exercise", "tech_exercise", "{7B859F11-E3E5-58C6-23E2-DF493E0CA31C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "package", "package", "{9B56B15D-8A96-3757-030B-23377EDEF65F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "exercise1", "exercise1", "{CA1B5640-A177-EC8C-1DD1-9EA2651BAE03}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StargateAPI", "tech_exercise\package\exercise1\api\StargateAPI.csproj", "{97992685-4D9E-B4C6-2F72-4459BAA40F86}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StargateAPI.Tests", "tech_exercise\package\exercise1\StargateAPI.Tests\StargateAPI.Tests.csproj", "{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{97992685-4D9E-B4C6-2F72-4459BAA40F86}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{97992685-4D9E-B4C6-2F72-4459BAA40F86}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{97992685-4D9E-B4C6-2F72-4459BAA40F86}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{97992685-4D9E-B4C6-2F72-4459BAA40F86}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{9B56B15D-8A96-3757-030B-23377EDEF65F} = {7B859F11-E3E5-58C6-23E2-DF493E0CA31C}
+		{CA1B5640-A177-EC8C-1DD1-9EA2651BAE03} = {9B56B15D-8A96-3757-030B-23377EDEF65F}
+		{97992685-4D9E-B4C6-2F72-4459BAA40F86} = {CA1B5640-A177-EC8C-1DD1-9EA2651BAE03}
+		{A1B2C3D4-E5F6-7890-ABCD-EF1234567890} = {CA1B5640-A177-EC8C-1DD1-9EA2651BAE03}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {07E5DBA3-2F7D-49BF-9666-C4584F1DDFF0}
+	EndGlobalSection
+EndGlobal
