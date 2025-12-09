@@ -155,14 +155,141 @@ src/app/
 
 ---
 
-## Live Demo Feature
+## Live Demo Prompts for Interview
 
-`astronaut-detail.component.ts:85-88` has an incomplete Add Duty dialog.
+These are the exact prompts to demonstrate AI-assisted development during the interview.
+Each prompt is designed to generate a complete, production-ready dialog component in one shot.
 
-**Demo prompt for interview**:
+---
+
+### PROMPT 1: Add Person Dialog
+
+Use this to create the "Add New Astronaut" dialog on the main roster page.
+
 ```
-I need to add a dialog to create new astronaut duties.
-The dialog should have fields for: rank, duty title, start date.
-It should call POST /AstronautDuty and refresh the duty list.
-Use Angular Material dialog with reactive forms.
+Create an Angular Material dialog component for adding a new astronaut to the system.
+
+CONTEXT:
+- This is for the Stargate ACTS (Astronaut Career Tracking System)
+- API endpoint: POST /Person takes a JSON string name, then POST /AstronautDuty creates the first duty
+- A new astronaut needs: name, initial rank, initial duty title, and start date
+- Business rule: "RETIRED" cannot be used as an initial duty title
+
+REQUIREMENTS:
+1. Standalone component named AddPersonDialogComponent
+2. Use Angular 18 features: Signals for state (saving, errorMessage), @if syntax
+3. Reactive form with validation:
+   - name: required, minLength(2)
+   - rank: required
+   - dutyTitle: required, custom validator to block "RETIRED" (case-insensitive)
+   - dutyStartDate: required, use mat-datepicker
+4. On submit: chain createPerson() then createAstronautDuty() using switchMap
+5. Show spinner while saving, show error messages on failure
+6. Match the space theme: dark background (#0a0e17), cyan accent (#00f0ff)
+
+STRUCTURE:
+- Two sections: "Personal Information" (name) and "Initial Assignment" (rank, duty, date)
+- Section labels styled as uppercase cyan text with bottom border
+- Error message box with red background and error icon
+- Gradient button (cyan to purple)
+
+Return the complete component file with template and styles inline.
 ```
+
+---
+
+### PROMPT 2: Add Duty Dialog
+
+Use this to create the "Add New Duty" dialog on the astronaut detail page.
+
+```
+Create an Angular Material dialog component for adding a new duty to an existing astronaut.
+
+CONTEXT:
+- This is for the Stargate ACTS (Astronaut Career Tracking System)
+- API endpoint: POST /AstronautDuty with { name, rank, dutyTitle, dutyStartDate }
+- The astronaut's name is passed via MAT_DIALOG_DATA
+- Business rule: "RETIRED" should not be entered here - there's a separate retire action
+
+REQUIREMENTS:
+1. Standalone component named AddDutyDialogComponent
+2. Use Angular 18 features: Signals for state, @if syntax, OnPush change detection
+3. Inject MAT_DIALOG_DATA to get { name: string }
+4. Reactive form with:
+   - rank: required
+   - dutyTitle: required, custom validator blocking "RETIRED" with message "Use the Retire action instead"
+   - dutyStartDate: required, mat-datepicker
+5. On submit: call createAstronautDuty(), close with true on success
+6. Show spinner during save, error message on failure
+7. Space theme styling matching the app
+
+STYLING:
+- Dialog title with icon (add_task) and cyan color
+- Form fields with outline appearance
+- Error messages in red with error icon
+- Gradient submit button (cyan to purple)
+- Dark dialog background
+
+Return the complete component file with inline template and styles.
+```
+
+---
+
+### PROMPT 3: Retire Astronaut Dialog
+
+Use this to create the "Retire Astronaut" confirmation dialog.
+
+```
+Create an Angular Material dialog component for retiring an astronaut from active duty.
+
+CONTEXT:
+- This is for the Stargate ACTS (Astronaut Career Tracking System)
+- Retiring an astronaut means creating a duty with title "RETIRED"
+- API: POST /AstronautDuty with { name, rank: currentRank, dutyTitle: "RETIRED", dutyStartDate }
+- Business rules:
+  - Career End Date is set to one day before retirement date (handled by API)
+  - Previous duty ends the day before (handled by API)
+  - Once retired, astronaut cannot have more duties added
+
+REQUIREMENTS:
+1. Standalone component named RetireDialogComponent
+2. Inject MAT_DIALOG_DATA with { name: string, currentRank: string }
+3. Use Signals for saving state and error message
+4. Show a WARNING message explaining what retirement does:
+   - Ends current duty assignment
+   - Sets career end date
+   - Marks as RETIRED
+   - Cannot be undone
+5. Single form field: retirement date (mat-datepicker, defaults to today)
+6. On confirm: call createAstronautDuty with dutyTitle="RETIRED"
+7. Use ORANGE/AMBER warning theme instead of cyan:
+   - Title background: rgba(255, 152, 0, 0.1)
+   - Warning icon and border: #ff9800
+   - Confirm button: mat-raised-button color="warn"
+
+STYLING:
+- Warning box with orange border, warning icon, bullet list of consequences
+- Astronaut name highlighted in cyan within the warning
+- Dark dialog content background
+- Orange-themed header and footer
+
+Return the complete component file with inline template and styles.
+```
+
+---
+
+## Demo Script for Interview
+
+1. **Show the app running** - "Here's the Angular frontend I built"
+2. **Open Claude/AI assistant** - "Let me show you how I use AI to accelerate development"
+3. **Pick one prompt above** - "I need to add [feature]. Here's my prompt..."
+4. **Paste the prompt** - Show the level of specificity and context
+5. **Generate the code** - Let AI produce the component
+6. **Integrate it** - Add imports, wire up the dialog.open() call
+7. **Test it live** - Show it working in the browser
+
+**Key talking points:**
+- "I front-load context so AI understands the system"
+- "I specify business rules to avoid back-and-forth"
+- "I include styling requirements for consistency"
+- "One detailed prompt vs 10 vague ones"
